@@ -7,7 +7,7 @@
     --border-color: #333333;
     --input-bg: #2d2d2d;
     
-    /* アクセントカラー（ご指定：陽線＝緑 / 陰線＝赤） */
+    /* アクセントカラー（陽線＝緑 / 陰線＝赤） */
     --color-yang: #38a169;    /* 陽線：緑 */
     --color-yin: #e53e3e;     /* 陰線：赤 */
     
@@ -18,10 +18,14 @@
     --color-draw: #718096;    /* 建値：グレー */
 }
 
+/* ページ全体の背景を黒、文字を白に固定 */
+html, body {
+    background-color: var(--bg-color) !important;
+    color: var(--text-color) !important;
+}
+
 body {
     font-family: 'Helvetica Neue', Arial, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
     margin: 0;
     padding: 20px;
     display: flex;
@@ -54,7 +58,7 @@ body {
     border-bottom: 3px solid var(--color-long);
 }
 
-/* コンテナ（各画面の枠） */
+/* コンテナ（各画面の枠）：初期状態では非表示にして重なりを防ぎます */
 .container {
     background-color: var(--container-bg);
     padding: 25px;
@@ -63,10 +67,11 @@ body {
     max-width: 600px;
     width: 100%;
     box-sizing: border-box;
-    display: none;
+    display: none; /* すべて同じページに表示されるのを防ぐ重要設定 */
 }
+/* activeクラスがついたタブだけを表示します */
 .container.active {
-    display: block;
+    display: block !important;
 }
 
 h1, h2 {
@@ -76,6 +81,7 @@ h1, h2 {
     text-align: center;
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 10px;
+    color: var(--text-color);
 }
 
 /* フォーム関連のスタイル */
@@ -91,7 +97,7 @@ h1, h2 {
 }
 
 /* 入力エリア */
-input[type="text"], input[type="number"], input[type="date"], textarea {
+input[type="text"], input[type="number"], input[type="date"], textarea, select {
     width: 100%;
     padding: 12px;
     background-color: var(--input-bg);
@@ -186,7 +192,7 @@ textarea { resize: vertical; height: 80px; }
 }
 .switch-label input { margin-right: 5px; }
 
-/* リアルタイムRR計算インジケータ（入力画面用） */
+/* リアルタイムRR計算インジケータ */
 .rr-indicator {
     background-color: #111;
     border: 1px solid #333;
@@ -238,15 +244,12 @@ textarea { resize: vertical; height: 80px; }
 .badge.負け { background-color: var(--color-lose); }
 .badge.建値 { background-color: var(--color-draw); }
 .badge.env { background-color: #4a5568; color: #e2e8f0; }
-.card-pair { font-size: 18px; font-weight: bold; margin-right: 5px; }
+.card-pair { font-size: 18px; font-weight: bold; margin-right: 5px; color: white; }
 
-/* 共通スタイル：半角スペース2つのため、空白が綺麗に維持されるように設定 */
 .card-line-prices { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 8px; white-space: pre-wrap; word-break: break-all; line-height: 1.5; }
 .card-line-metrics { font-size: 13px; color: var(--text-color); margin-bottom: 6px; white-space: pre-wrap; word-break: break-all; line-height: 1.5; }
-
 .card-memo { font-size: 13px; color: #dddddd; padding-top: 4px; word-break: break-all; margin-bottom: 10px; }
 
-/* カード操作ボタンエリア */
 .card-footer {
     display: flex;
     justify-content: flex-end;
@@ -265,7 +268,6 @@ textarea { resize: vertical; height: 80px; }
 .card-op-btn.edit { color: var(--color-long); }
 .card-op-btn.delete { color: var(--color-lose); }
 
-/* バックアップセクション */
 .backup-section {
     margin-top: 30px;
     padding-top: 20px;
@@ -311,9 +313,10 @@ textarea { resize: vertical; height: 80px; }
     justify-content: space-between;
     padding: 6px 0;
     border-bottom: 1px solid #2d2d2d;
+    color: var(--text-color);
 }
 
-/* 新規追加：24時間統計 縦の棒グラフ用のCSS */
+/* 24時間統計 縦の棒グラフ */
 .v-chart-wrapper {
     background-color: var(--input-bg);
     padding: 20px 15px 15px 15px;
@@ -326,7 +329,7 @@ textarea { resize: vertical; height: 80px; }
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    height: 160px; /* グラフの最大高さ */
+    height: 160px;
     min-width: 500px;
     position: relative;
     padding-top: 20px;
