@@ -1,0 +1,13 @@
+:root {
+    --bg-color: #121212; --container-bg: #1e1e1e; --text-color: #ffffff;
+    --text-muted: #aaaaaa; --border-color: #333333; --input-bg: #2d2d2d;
+    --color-yang: #38a169; --color-yin: #e53e3e; --color-long: #3182ce;
+    --color-short: #e53e3e; --color-win: #38a169; --color-lose: #e53e3e; --color-draw: #718096;
+}
+body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+.tabs { display: flex; width: 100%; max-width: 600px; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); }
+.tab-btn { flex: 1; padding: 15px; background: none; border: none; color: var(--text-muted); font-size: 16px; font-weight: bold; cursor: pointer; text-align: center; }
+.tab-btn.active { color: var(--text-color); border-bottom: 3px solid var(--color-long); }
+.container { background-color: var(--container-bg); padding: 25px; border-radius: 12px; max-width: 600px; width: 100%; box-sizing: border-box; display: none; }
+.container.active { display: block; }
+/* ...以下、既存のスタイルをすべてこちらに記述します */

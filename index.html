@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Log Professional</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="tabs">
+        <button id="btn-tab-record" class="tab-btn active" onclick="switchTab('record')">記録</button>
+        <button id="btn-tab-list" class="tab-btn" onclick="switchTab('list')">一覧</button>
+        <button id="btn-tab-stats" class="tab-btn" onclick="switchTab('stats')">統計</button>
+    </div>
+
+    <div id="tab-record" class="container active">
+        </div>
+    <div id="tab-list" class="container">
+        </div>
+    <div id="tab-stats" class="container">
+        </div>
+
+    <script src="js/ui.js"></script>
+    <script src="js/record.js"></script>
+    <script src="js/list.js"></script>
+    <script src="js/stats.js"></script>
+</body>
+</html>
