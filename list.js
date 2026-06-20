@@ -1,4 +1,3 @@
-// 一覧の再描画処理
 function refreshApp() {
     const trades = JSON.parse(localStorage.getItem('dark_trades')) || [];
     document.getElementById('totalCountText').innerText = `${trades.length} 件の記録`;
@@ -25,16 +24,10 @@ function refreshApp() {
 
             const tRr = t.targetRr !== undefined ? t.targetRr : "--";
             const aRr = t.actualRr !== undefined ? t.actualRr : "--";
-            
-            // 保有時間のテキスト成形
-            let holdText = "--";
-            if (t.holdMinutes !== undefined && t.holdMinutes > 0) {
-                holdText = t.holdMinutes >= 60 ? `${Math.floor(t.holdMinutes / 60)}時間${t.holdMinutes % 60}分` : `${t.holdMinutes}分`;
-            }
 
             card.innerHTML = `
                 <div class="card-row1">
-                    <span>📅 ${t.date} ⏱️ ${t.time}～${t.closeTime || "-"} (${t.market}市場)</span>
+                    <span>📅 ${t.date} ${t.time} (${t.market}市場)</span>
                     <span>😊 : ${t.emotion || "-"}</span>
                 </div>
                 <div class="card-row2">
@@ -42,11 +35,10 @@ function refreshApp() {
                     ${t.result && t.result !== "-" ? `<span class="badge ${t.result}">${t.result}</span>` : ''}
                     <span class="card-pair">${t.pair}</span>
                     ${envStr ? `<span class="badge env">${envStr}</span>` : ''}
-                    <span class="badge env" style="background-color:#2d3748; margin-left:auto;">保有: ${holdText}</span>
                 </div>
                 
-                <div class="card-line-prices">Open: ${t.openPrice}  Close: ${t.closePrice}<br>TP: ${t.tpPrice}  SL: ${t.slPrice}  RR 1 : ${tRr}</div>
-                <div class="card-line-metrics">ロット: ${t.lot}  RR 1 : ${aRr}<br>獲得: <span style="font-weight:bold; color:${t.pips >= 0 ? 'var(--color-win)':'var(--color-lose)'}">${t.pips} pips</span>  損益: <span style="font-weight:bold; color:${pnlColor}">${t.pnl} USD</span></div>
+                <div class="card-line-prices">Open: ${t.openPrice}  Close: ${t.closePrice}  TP: ${t.tpPrice}  SL: ${t.slPrice}  RR 1 : ${tRr}</div>
+                <div class="card-line-metrics">ロット: ${t.lot}  獲得: <span style="font-weight:bold; color:${t.pips >= 0 ? 'var(--color-win)':'var(--color-lose)'}">${t.pips} pips</span>  損益: <span style="font-weight:bold; color:${pnlColor}">${t.pnl} USD</span>  RR 1 : ${aRr}</div>
 
                 <div class="card-memo">${t.memo.replace(/\n/g, '<br>')}</div>
                 
@@ -64,7 +56,6 @@ function refreshApp() {
     }
 }
 
-// 過去ログの編集読み込み
 function editTrade(id) {
     const trades = JSON.parse(localStorage.getItem('dark_trades')) || [];
     const t = trades.find(item => item.id === id);
@@ -76,7 +67,6 @@ function editTrade(id) {
 
     document.getElementById('tradeDate').value = t.date;
     document.getElementById('tradeTime').value = t.time;
-    document.getElementById('closeTime').value = t.closeTime === "-" ? "" : t.closeTime;
     document.getElementById('openPriceInput').value = t.openPrice === "-" ? "" : t.openPrice;
     document.getElementById('closePriceInput').value = t.closePrice === "-" ? "" : t.closePrice;
     document.getElementById('tpPriceInput').value = t.tpPrice === "-" ? "" : t.tpPrice;
@@ -86,32 +76,34 @@ function editTrade(id) {
     document.getElementById('pnlInput').value = t.pnl;
     document.getElementById('memoInput').value = t.memo === "-" ? "" : t.memo;
 
-    activateButtonInGroup('marketGroup', t.market);
-    activateButtonInGroup('monthlyGroup', t.monthly);
-    activateButtonInGroup('weeklyGroup', t.weekly);
-    activateButtonInGroup('dailyGroup', t.daily);
-    activateButtonInGroup('biasGroup', t.bias);
-    activateButtonInGroup('sideGroup', t.side);
-    activateButtonInGroup('resultGroup', t.result);
-    activateButtonInGroup('emotionGroup', t.emotion);
+    if (typeof activateButtonInGroup === "function") {
+        activateButtonInGroup('marketGroup', t.market);
+        activateButtonInGroup('monthlyGroup', t.monthly);
+        activateButtonInGroup('weeklyGroup', t.weekly);
+        activateButtonInGroup('dailyGroup', t.daily);
+        activateButtonInGroup('biasGroup', t.bias);
+        activateButtonInGroup('sideGroup', t.side);
+        activateButtonInGroup('resultGroup', t.result);
+        activateButtonInGroup('emotionGroup', t.emotion);
 
-    const basePairs = ["XAUUSD", "BTCUSD", "OIL", "USDJPY", "EURUSD", "AUDJPY", "AUDUSD", "EURJPY"];
-    if (basePairs.includes(t.pair)) {
-        activateButtonInGroup('pairGroup', t.pair);
-        document.getElementById('customPairInput').style.display = "none";
-    } else {
-        activateButtonInGroup('pairGroup', "その他");
-        const customInput = document.getElementById('customPairInput');
-        customInput.style.display = "block";
-        customInput.value = t.pair;
+        const basePairs = ["XAUUSD", "BTCUSD", "OIL", "USDJPY", "EURUSD", "AUDJPY", "AUDUSD", "EURJPY"];
+        if (basePairs.includes(t.pair)) {
+            activateButtonInGroup('pairGroup', t.pair);
+            document.getElementById('customPairInput').style.display = "none";
+        } else {
+            activateButtonInGroup('pairGroup', "その他");
+            const customInput = document.getElementById('customPairInput');
+            customInput.style.display = "block";
+            customInput.value = t.pair;
+        }
     }
 
-    autoCalculateAllMetrics();
+    if (typeof autoCalculateAllMetrics === "function") autoCalculateAllMetrics();
+
     switchTab('record');
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// 1件削除
 function deleteTrade(id) {
     if(confirm("このトレード記録を削除してもよろしくて？")) {
         let trades = JSON.parse(localStorage.getItem('dark_trades')) || [];
@@ -121,17 +113,16 @@ function deleteTrade(id) {
     }
 }
 
-// Excel用CSVエクスポート（クローズ時間、保有分数項目を追加拡張）
 function exportToCSV() {
     const trades = JSON.parse(localStorage.getItem('dark_trades')) || [];
     if(trades.length === 0) { alert("出力するデータがありませんわ。"); return; }
 
     let csvContent = "\uFEFF"; 
-    csvContent += "日にち,オープン時間,クローズ時間,保有分数,市場,通貨ペア,月足,週足,日足,目線,売買,結果,Open,Close,TP,SL,ロット,獲得PIPS,損益額USD,感情,想定RR,実際RR,メモ\n";
+    csvContent += "日にち,時間,市場,通貨ペア,月足,週足,日足,目線,売買,結果,Open,Close,TP,SL,ロット,獲得PIPS,損益額USD,感情,想定RR,実際RR,メモ\n";
 
     trades.forEach(t => {
         const row = [
-            t.date, t.time, t.closeTime || "-", t.holdMinutes || 0, t.market, t.pair, t.monthly, t.weekly, t.daily, t.bias, t.side, t.result,
+            t.date, t.time, t.market, t.pair, t.monthly, t.weekly, t.daily, t.bias, t.side, t.result,
             t.openPrice, t.closePrice, t.tpPrice, t.slPrice, t.lot, t.pips, t.pnl, t.emotion,
             t.targetRr !== undefined ? t.targetRr : "--", t.actualRr !== undefined ? t.actualRr : "--",
             `"${t.memo.replace(/"/g, '""')}"`
@@ -149,7 +140,6 @@ function exportToCSV() {
     document.body.removeChild(link);
 }
 
-// テキスト形式エクスポート
 function exportToText() {
     const trades = localStorage.getItem('dark_trades');
     if(!trades || trades === "[]") { alert("出力するデータがありませんわ。"); return; }
@@ -158,7 +148,6 @@ function exportToText() {
     });
 }
 
-// テキストインポート復元
 function importFromText() {
     const jsonText = prompt("データをここに貼り付けてくださいわ。");
     if(!jsonText) return;
@@ -174,7 +163,6 @@ function importFromText() {
     } catch(e) { alert("失敗しました。"); }
 }
 
-// 全データ初期化
 function clearAllData() {
     if(confirm("本当に全て削除しますの？")) {
         localStorage.removeItem('dark_trades');

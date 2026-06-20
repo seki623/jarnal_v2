@@ -54,11 +54,11 @@ body {
     text-align: center;
 }
 .tab-btn.active {
-    color: var(--text-color);
+    color: var(--text-color) !important;
     border-bottom: 3px solid var(--color-long);
 }
 
-/* コンテナ（各画面の枠）：初期状態では非表示にして重なりを防ぎます */
+/* 各画面のコンテナ：初期状態では非表示にして重なりを防ぎます */
 .container {
     background-color: var(--container-bg);
     padding: 25px;
@@ -97,7 +97,7 @@ h1, h2 {
 }
 
 /* 入力エリア */
-input[type="text"], input[type="number"], input[type="date"], textarea, select {
+input[type="text"], input[type="number"], input[type="date"], textarea {
     width: 100%;
     padding: 12px;
     background-color: var(--input-bg);
@@ -204,7 +204,6 @@ textarea { resize: vertical; height: 80px; }
     margin-bottom: 15px;
     display: flex;
     gap: 15px;
-    align-items: center;
 }
 
 /* 一覧・件数表示用ヘッダー */
@@ -246,8 +245,8 @@ textarea { resize: vertical; height: 80px; }
 .badge.env { background-color: #4a5568; color: #e2e8f0; }
 .card-pair { font-size: 18px; font-weight: bold; margin-right: 5px; color: white; }
 
-.card-line-prices { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 8px; white-space: pre-wrap; word-break: break-all; line-height: 1.5; }
-.card-line-metrics { font-size: 13px; color: var(--text-color); margin-bottom: 6px; white-space: pre-wrap; word-break: break-all; line-height: 1.5; }
+.card-line-prices { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 8px; white-space: pre-wrap; word-break: break-all; }
+.card-line-metrics { font-size: 13px; color: var(--text-color); margin-bottom: 6px; white-space: pre-wrap; word-break: break-all; }
 .card-memo { font-size: 13px; color: #dddddd; padding-top: 4px; word-break: break-all; margin-bottom: 10px; }
 
 .card-footer {
@@ -314,62 +313,4 @@ textarea { resize: vertical; height: 80px; }
     padding: 6px 0;
     border-bottom: 1px solid #2d2d2d;
     color: var(--text-color);
-}
-
-/* 24時間統計 縦の棒グラフ */
-.v-chart-wrapper {
-    background-color: var(--input-bg);
-    padding: 20px 15px 15px 15px;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    margin-bottom: 25px;
-    overflow-x: auto;
-}
-.v-chart-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    height: 160px;
-    min-width: 500px;
-    position: relative;
-    padding-top: 20px;
-}
-.v-chart-column {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 100%;
-    justify-content: flex-end;
-}
-.v-chart-bar-wrapper {
-    width: 60%;
-    height: 100%;
-    display: flex;
-    align-items: flex-end;
-    position: relative;
-}
-.v-chart-bar {
-    width: 100%;
-    background: linear-gradient(to top, var(--color-long), #63b3ed);
-    border-radius: 4px 4px 0 0;
-    transition: height 0.5s ease-out;
-    position: relative;
-}
-.v-chart-bar:hover {
-    background: #63b3ed;
-}
-.v-chart-count {
-    position: absolute;
-    top: -18px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 10px;
-    color: var(--text-color);
-    font-weight: bold;
-}
-.v-chart-label {
-    margin-top: 6px;
-    font-size: 10px;
-    color: var(--text-muted);
 }

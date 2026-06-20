@@ -24,39 +24,29 @@
                 <input type="date" id="tradeDate" onchange="updateDstDefault()">
             </div>
             <div class="form-group">
-                <label>市場</label>
-                <div class="btn-group" id="marketGroup">
-                    <button type="button" class="select-btn" data-type="market" data-val="アジア">アジア</button>
-                    <button type="button" class="select-btn" data-type="market" data-val="ロンドン">ロンドン</button>
-                    <button type="button" class="select-btn" data-type="market" data-val="ニューヨーク">ニューヨーク</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="flex-row">
-            <div class="form-group">
-                <label>オープン時間 (JST)</label>
-                <input type="text" id="tradeTime" placeholder="例: 09:30" oninput="autoCalculateAllMetrics()">
-            </div>
-            <div class="form-group">
-                <label>クローズ時間 (JST)</label>
-                <input type="text" id="closeTime" placeholder="例: 15:45" oninput="autoCalculateAllMetrics()">
+                <label>日本時間 (JST)</label>
+                <input type="text" id="tradeTime" placeholder="時間または下の変換を使用" oninput="autoCalculateAllMetrics()">
             </div>
         </div>
 
         <div class="form-group convert-box">
             <label style="margin-bottom:4px;">⏰ 海外時間(時差-6時間)を変換</label>
-            <div class="flex-row" style="align-items: center; gap: 8px;">
-                <select id="timeTargetSelect" style="flex: 1; padding: 10px; background-color: var(--input-bg); color: white; border: 1px solid var(--border-color); border-radius: 6px;">
-                    <option value="open">オープン時間に入力</option>
-                    <option value="close">クローズ時間に入力</option>
-                </select>
-                <input type="text" id="foreignTimeInput" placeholder="例: 7:41" autocomplete="off" style="flex: 1;">
-                <button type="button" class="action-btn" onclick="runTimeConverter()" style="margin:0; width:auto; padding:0 15px; height: 43px;">変換</button>
+            <div class="flex-row">
+                <input type="text" id="foreignTimeInput" placeholder="例: 7:41" autocomplete="off">
+                <button type="button" class="action-btn" onclick="runTimeConverter()" style="margin:0; width:auto; padding:0 15px;">変換</button>
             </div>
             <label class="switch-label">
                 <input type="checkbox" id="isSummerTime">夏時間
             </label>
+        </div>
+
+        <div class="form-group">
+            <label>市場</label>
+            <div class="btn-group" id="marketGroup">
+                <button type="button" class="select-btn" data-type="market" data-val="アジア">アジア</button>
+                <button type="button" class="select-btn" data-type="market" data-val="ロンドン">ロンドン</button>
+                <button type="button" class="select-btn" data-type="market" data-val="ニューヨーク">ニューヨーク</button>
+            </div>
         </div>
 
         <div class="form-group">
@@ -150,7 +140,6 @@
         <div class="rr-indicator" id="liveRrBox">
             <span>想定 RR 1 : --</span>
             <span>実際 RR 1 : --</span>
-            <span id="liveHoldTime" style="margin-left: auto;">保有時間: --</span>
         </div>
 
         <div class="flex-row">
@@ -226,15 +215,10 @@
             </div>
         </div>
 
-        <h2>⏱️ ポジションオープン時間の統計 (JST)</h2>
-        <div class="v-chart-wrapper">
-            <div class="v-chart-container" id="hourlyVChart"></div>
-        </div>
-
         <h2>😊 感情トレード率</h2>
         <div class="stat-list" id="emotionStatList"></div>
 
-        <h2>💱 通貨ペア別成績（平均保有時間）</h2>
+        <h2>💱 通貨ペア別成績</h2>
         <div class="stat-list" id="pairStatList"></div>
     </div>
 
