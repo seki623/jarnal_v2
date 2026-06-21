@@ -1,4 +1,3 @@
-/* 基本のカラー設定：背景は黒、基本文字は白 */
 :root {
     --bg-color: #121212;
     --container-bg: #1e1e1e;
@@ -7,18 +6,16 @@
     --border-color: #333333;
     --input-bg: #2d2d2d;
     
-    /* アクセントカラー（陽線＝緑 / 陰線＝赤） */
-    --color-yang: #38a169;    /* 陽線：緑 */
-    --color-yin: #e53e3e;     /* 陰線：赤 */
+    --color-yang: #38a169;    
+    --color-yin: #e53e3e;     
     
-    --color-long: #3182ce;    /* ロング：青 */
-    --color-short: #e53e3e;   /* ショート：赤 */
-    --color-win: #38a169;     /* 勝ち：緑 */
-    --color-lose: #e53e3e;    /* 負け：赤 */
-    --color-draw: #718096;    /* 建値：グレー */
+    --color-long: #3182ce;    
+    --color-short: #e53e3e;   
+    --color-win: #38a169;     
+    --color-lose: #e53e3e;    
+    --color-draw: #718096;    
 }
 
-/* ページ全体の背景を黒、文字を白に固定 */
 html, body {
     background-color: var(--bg-color) !important;
     color: var(--text-color) !important;
@@ -33,7 +30,6 @@ body {
     align-items: center;
 }
 
-/* タブメニューのスタイル */
 .tabs {
     display: flex;
     width: 100%;
@@ -58,7 +54,6 @@ body {
     border-bottom: 3px solid var(--color-long);
 }
 
-/* 各画面のコンテナ：初期状態では非表示にして重なりを防ぎます */
 .container {
     background-color: var(--container-bg);
     padding: 25px;
@@ -67,9 +62,8 @@ body {
     max-width: 600px;
     width: 100%;
     box-sizing: border-box;
-    display: none; /* すべて同じページに表示されるのを防ぐ重要設定 */
+    display: none; 
 }
-/* activeクラスがついたタブだけを表示します */
 .container.active {
     display: block !important;
 }
@@ -84,7 +78,28 @@ h1, h2 {
     color: var(--text-color);
 }
 
-/* フォーム関連のスタイル */
+.section-title {
+    font-size:14px; 
+    margin-bottom:8px; 
+    padding-left:8px;
+}
+.section-title.open-theme {
+    color:var(--color-long); 
+    border-left:3px solid var(--color-long);
+}
+.section-title.close-theme {
+    color:var(--color-yin); 
+    border-left:3px solid var(--color-yin);
+    margin-top:15px;
+}
+
+.live-status-text {
+    font-size:13px; 
+    color:var(--text-muted); 
+    margin-bottom:15px; 
+    text-align:right;
+}
+
 .form-group {
     margin-bottom: 20px;
 }
@@ -96,8 +111,7 @@ h1, h2 {
     color: var(--text-muted);
 }
 
-/* 入力エリア */
-input[type="text"], input[type="number"], input[type="date"], textarea {
+input[type="text"], input[type="number"], input[type="date"], textarea, select {
     width: 100%;
     padding: 12px;
     background-color: var(--input-bg);
@@ -108,6 +122,7 @@ input[type="text"], input[type="number"], input[type="date"], textarea {
     box-sizing: border-box;
 }
 textarea { resize: vertical; height: 80px; }
+select { cursor: pointer; }
 
 .flex-row {
     display: flex;
@@ -119,7 +134,6 @@ textarea { resize: vertical; height: 80px; }
     margin-bottom: 0;
 }
 
-/* 選択ボタンのスタイル */
 .btn-group {
     display: flex;
     flex-wrap: wrap;
@@ -141,7 +155,6 @@ textarea { resize: vertical; height: 80px; }
 }
 .select-btn:hover { opacity: 0.8; }
 
-/* ボタン選択時のアクティブカラー */
 .select-btn.active[data-type="pair"],
 .select-btn.active[data-type="market"] { background-color: #4a5568; border-color: #a0aec0; }
 .select-btn.active[data-val="Long"] { background-color: var(--color-long); border-color: #63b3ed; }
@@ -151,7 +164,6 @@ textarea { resize: vertical; height: 80px; }
 .select-btn.active[data-val="建値"] { background-color: var(--color-draw); border-color: #cbd5e0; }
 .select-btn.active[data-type="emotion"] { background-color: #b7791f; border-color: #ecc94b; }
 
-/* 環境認識・目線用カラー指定 */
 .select-btn.active[data-val="陽線"] { background-color: var(--color-yang); border-color: #68d391; }
 .select-btn.active[data-val="陰線"] { background-color: var(--color-yin); border-color: #fc8181; }
 .select-btn.active[data-val="ロング"] { background-color: var(--color-long); border-color: #63b3ed; }
@@ -160,7 +172,6 @@ textarea { resize: vertical; height: 80px; }
 
 #customPairInput { margin-top: 8px; display: none; }
 
-/* 実行系ボタン */
 .action-btn {
     background-color: var(--color-long);
     color: white;
@@ -175,12 +186,14 @@ textarea { resize: vertical; height: 80px; }
 }
 .action-btn:hover { opacity: 0.9; }
 
-/* 時間変換エリア */
 .convert-box {
     background-color: #1a202c;
     padding: 15px;
     border-radius: 8px;
     border: 1px dashed #4a5568;
+}
+.convert-label {
+    margin-bottom:4px;
 }
 .switch-label {
     display: flex;
@@ -192,7 +205,6 @@ textarea { resize: vertical; height: 80px; }
 }
 .switch-label input { margin-right: 5px; }
 
-/* リアルタイムRR計算インジケータ */
 .rr-indicator {
     background-color: #111;
     border: 1px solid #333;
@@ -206,7 +218,6 @@ textarea { resize: vertical; height: 80px; }
     gap: 15px;
 }
 
-/* 一覧・件数表示用ヘッダー */
 .list-header {
     display: flex;
     justify-content: space-between;
@@ -226,7 +237,6 @@ textarea { resize: vertical; height: 80px; }
     cursor: pointer;
 }
 
-/* トレード記録カード */
 .trade-card {
     background-color: var(--input-bg);
     border: 1px solid var(--border-color);
@@ -244,6 +254,19 @@ textarea { resize: vertical; height: 80px; }
 .badge.建値 { background-color: var(--color-draw); }
 .badge.env { background-color: #4a5568; color: #e2e8f0; }
 .card-pair { font-size: 18px; font-weight: bold; margin-right: 5px; color: white; }
+
+.card-time-display {
+    display: flex;
+    gap: 20px;
+    background-color: #1a1a1a;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #ddd;
+    margin-bottom: 10px;
+    border: 1px solid #2a2a2a;
+}
+.time-block-label { color: var(--text-muted); font-size: 10px; text-transform: uppercase; display: block; margin-bottom: 2px;}
 
 .card-line-prices { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 8px; white-space: pre-wrap; word-break: break-all; }
 .card-line-metrics { font-size: 13px; color: var(--text-color); margin-bottom: 6px; white-space: pre-wrap; word-break: break-all; }
@@ -284,7 +307,6 @@ textarea { resize: vertical; height: 80px; }
     margin: 5px;
 }
 
-/* 統計画面 */
 .stat-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -314,3 +336,13 @@ textarea { resize: vertical; height: 80px; }
     border-bottom: 1px solid #2d2d2d;
     color: var(--text-color);
 }
+.chart-row {
+    display: flex;
+    font-family: monospace;
+    font-size: 13px;
+    padding: 3px 0;
+    align-items: center;
+}
+.chart-label { width: 50px; color: var(--text-muted); }
+.chart-bar { color: #3182ce; margin-right: 8px; word-break: break-all; }
+.chart-count { color: var(--text-muted); font-size: 11px; }

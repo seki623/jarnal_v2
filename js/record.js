@@ -1,71 +1,10 @@
-function isUSDaylightSavingTime(dateString) {
-    if (!dateString) return false;
-    const d = new Date(dateString + 'T00:00:00');
-    if (isNaN(d.getTime())) return false;
-    const year = d.getFullYear();
-    let marchSecondSunday = new Date(year, 2, 8); 
-    while (marchSecondSunday.getDay() !== 0) {
-        marchSecondSunday.setDate(marchSecondSunday.getDate() + 1);
-    }
-    let novemberFirstSunday = new Date(year, 10, 1); 
-    while (novemberFirstSunday.getDay() !== 0) {
-        novemberFirstSunday.setDate(novemberFirstSunday.getDate() + 1);
-    }
-    const targetTime = d.getTime();
-    return targetTime >= marchSecondSunday.getTime() && targetTime < novemberFirstSunday.getTime();
-}
-
-function updateDstDefault() {
-    const editingId = document.getElementById('editingId').value;
-    if (!editingId) {
-        const dateVal = document.getElementById('tradeDate').value;
-        document.getElementById('isSummerTime').checked = isUSDaylightSavingTime(dateVal);
-    }
-}
-
-function setupButtonGroups() {
-    document.querySelectorAll('.btn-group').forEach(group => {
-        group.addEventListener('click', e => {
-            if (e.target.classList.contains('select-btn')) {
-                if (e.target.classList.contains('active')) {
-                    e.target.classList.remove('active');
-                } else {
-                    group.querySelectorAll('.select-btn').forEach(btn => btn.classList.remove('active'));
-                    e.target.classList.add('active');
-                }
-                
-                if (e.target.getAttribute('data-type') === 'pair') {
-                    const customInput = document.getElementById('customPairInput');
-                    if (e.target.getAttribute('data-val') === 'その他' && e.target.classList.contains('active')) {
-                        customInput.style.display = 'block';
-                    } else {
-                        customInput.style.display = 'none';
-                    }
-                }
-                autoCalculateAllMetrics();
-            }
-        });
-    });
-}
-
-function activateButtonInGroup(groupId, value) {
-    const group = document.getElementById(groupId);
-    if (!group) return;
-    group.querySelectorAll('.select-btn').forEach(btn => {
-        if(value && btn.getAttribute('data-val') === value) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    });
-}
-
-function getSelectedVal(groupId) {
-    const activeBtn = document.querySelector(`#${groupId} .select-btn.active`);
-    return activeBtn ? activeBtn.getAttribute('data-val') : "";
-}
-
+// データリアルタイム計算・時間変換・トレードの新規保存ロジック
 function autoCalculateAllMetrics() {
+    const openDateVal = document.getElementById('tradeDate').value;
+    const openTimeVal = document.getElementById('tradeTime').value.trim();
+    const closeDateVal = document.getElementById('closeDate').value;
+    const closeTimeVal = document.getElementById('closeTime').value.trim();
+
     const openVal = document.getElementById('openPriceInput').value;
     const closeVal = document.getElementById('closePriceInput').value;
     const tpVal = document.getElementById('tpPriceInput').value;
@@ -75,6 +14,31 @@ function autoCalculateAllMetrics() {
     const result = getSelectedVal('resultGroup');
     const side = getSelectedVal('sideGroup');
 
+    // 1. 保有時間の自動計算
+    currentHoldingMinutes = null;
+    const timePattern = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
+    if (openDateVal && closeDateVal && timePattern.test(openTimeVal) && timePattern.test(closeTimeVal)) {
+        const openFullStr = `${openDateVal}T${openTimeVal.padStart(5, '0')}:00`;
+        const closeFullStr = `${closeDateVal}T${closeTimeVal.padStart(5, '0')}:00`;
+        const openDateTime = new Date(openFullStr);
+        const closeDateTime = new Date(closeFullStr);
+
+        if (!isNaN(openDateTime.getTime()) && !isNaN(closeDateTime.getTime())) {
+            const diffMs = closeDateTime.getTime() - openDateTime.getTime();
+            if (diffMs >= 0) {
+                currentHoldingMinutes = Math.floor(diffMs / (1000 * 60));
+                document.getElementById('liveHoldingBox').innerText = `保有時間: ${currentHoldingMinutes} 分`;
+            } else {
+                document.getElementById('liveHoldingBox').innerText = `保有時間: 不正な日時（CloseがOpenより過去です）`;
+            }
+        } else {
+            document.getElementById('liveHoldingBox').innerText = `保有時間: --`;
+        }
+    } else {
+        document.getElementById('liveHoldingBox').innerText = `保有時間: --`;
+    }
+
+    // 2. 獲得PIPS・損益計算
     if (openVal !== "" && closeVal !== "") {
         const openPrice = parseFloat(openVal);
         const closePrice = parseFloat(closeVal);
@@ -93,6 +57,7 @@ function autoCalculateAllMetrics() {
         }
     }
 
+    // 3. RR計算ロジック
     let targetRrText = "--";
     let actualRrText = "--";
 
@@ -105,12 +70,26 @@ function autoCalculateAllMetrics() {
             if (tpVal !== "") {
                 const tpP = parseFloat(tpVal);
                 let targetRewardWidth = (side === "Short") ? (openP - tpP) : (tpP - openP);
-                targetRrText = (targetRewardWidth / riskWidth).toFixed(2);
+                let calcTargetRr = Math.abs(targetRewardWidth) / Math.abs(riskWidth);
+                if (result === '負け') calcTargetRr = -calcTargetRr;
+                
+                if (calcTargetRr === 0 || result === '建値') {
+                    targetRrText = "--";
+                } else {
+                    targetRrText = calcTargetRr.toFixed(2);
+                }
             }
             if (closeVal !== "") {
                 const closeP = parseFloat(closeVal);
                 let actualRewardWidth = (side === "Short") ? (openP - closeP) : (closeP - openP);
-                actualRrText = (actualRewardWidth / riskWidth).toFixed(2);
+                let calcActualRr = Math.abs(actualRewardWidth) / Math.abs(riskWidth);
+                if (result === '負け') calcActualRr = -calcActualRr;
+
+                if (calcActualRr === 0 || result === '建値') {
+                    actualRrText = "--";
+                } else {
+                    actualRrText = calcActualRr.toFixed(2);
+                }
             }
         }
     }
@@ -125,6 +104,7 @@ function autoCalculateAllMetrics() {
 function runTimeConverter() {
     const timeStr = document.getElementById('foreignTimeInput').value.trim();
     const isSummer = document.getElementById('isSummerTime').checked;
+    const targetSelect = document.getElementById('timeConvertTarget').value;
     const timeRegex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
     
     if (!timeRegex.test(timeStr)) {
@@ -135,7 +115,12 @@ function runTimeConverter() {
     const [hours, minutes] = timeStr.split(':').map(Number);
     let jstHours = (hours + 6) % 24;
     const formattedTime = `${String(jstHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-    document.getElementById('tradeTime').value = formattedTime;
+
+    if (targetSelect === "open") {
+        document.getElementById('tradeTime').value = formattedTime;
+    } else {
+        document.getElementById('closeTime').value = formattedTime;
+    }
 
     let market = "";
     let asiaStart = 8, asiaEnd = 16;
@@ -156,6 +141,7 @@ function runTimeConverter() {
 
     if(!market) market = "アジア"; 
     activateButtonInGroup('marketGroup', market);
+    autoCalculateAllMetrics();
 }
 
 function saveTradeLog() {
@@ -176,8 +162,14 @@ function saveTradeLog() {
     const pips = document.getElementById('pipsInput').value;
     const pnl = document.getElementById('pnlInput').value;
 
+    autoCalculateAllMetrics();
+
     const logData = {
-        date, time,
+        date, 
+        time,
+        closeDate: document.getElementById('closeDate').value || "",
+        closeTime: document.getElementById('closeTime').value.trim() || "",
+        holdingMinutes: currentHoldingMinutes, 
         market: getSelectedVal('marketGroup') || "-",
         pair,
         monthly: getSelectedVal('monthlyGroup') || "-",
@@ -212,7 +204,7 @@ function saveTradeLog() {
 
     localStorage.setItem('dark_trades', JSON.stringify(trades));
     setFormToNewMode();
-    if (typeof refreshApp === "function") refreshApp();
+    refreshApp();
     switchTab('list');
 }
 
@@ -222,6 +214,7 @@ function setFormToNewMode() {
     document.getElementById('submitBtn').innerText = "このトレードを保存する";
 
     document.getElementById('tradeTime').value = "";
+    document.getElementById('closeTime').value = "";
     document.getElementById('foreignTimeInput').value = "";
     document.getElementById('openPriceInput').value = "";
     document.getElementById('closePriceInput').value = "";
@@ -237,8 +230,11 @@ function setFormToNewMode() {
     
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('tradeDate').value = today;
+    document.getElementById('closeDate').value = today;
     updateDstDefault(); 
 
+    currentHoldingMinutes = null;
+    document.getElementById('liveHoldingBox').innerText = `保有時間: --`;
     currentCalculatedRr = { targetRr: "--", actualRr: "--" };
     document.getElementById('liveRrBox').innerHTML = `<span>想定 RR 1 : --</span><span>実際 RR 1 : --</span>`;
 }
